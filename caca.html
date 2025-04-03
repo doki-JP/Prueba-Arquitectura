@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hyperformula + XLSX</title>
+</head>
+<body>
+  <h1>Cargar Archivo XLSX y Usar Hyperformula</h1>
+  <input type="file" id="fileInput" />
+  <pre id="output"></pre>
+
+  <!-- Carga de librerías -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@handsontable/hyperformula/dist/hyperformula.full.min.js"></script>
+
+  <script>
+    document.getElementById('fileInput').addEventListener('change', async function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = async function (e) {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+
+          // Selecciona la primera hoja
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+
+          // Convierte la hoja de cálculo en una matriz
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+          // Crea una instancia de Hyperformula
+          const hfInstance = HyperFormula.buildFromArray(jsonData);
+
+          // Ejemplo: lee un valor de una celda (A1)
+          const cellValue = hfInstance.getCellValue({ sheet: 0, col: 0, row: 0 });
+
+          // Muestra los datos y el valor en el HTML
+          document.getElementById('output').textContent = `
+Matriz cargada desde el archivo:
+${JSON.stringify(jsonData, null, 2)}
+
+Valor de la celda A1: ${cellValue}
+          `;
+        };
+
+        reader.readAsArrayBuffer(file);
+      }
+    });
+  </script>
+</body>
+</html>
