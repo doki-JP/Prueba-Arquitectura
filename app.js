@@ -10,6 +10,7 @@ const options = {
 function readExcelFile(filePath) {
     try {
         // Read the workbook
+        console.log('Reading Excel file...', filePath);
         const workbook = XLSX.readFile(filePath);
         
         // Convert first sheet to 2D array
@@ -32,7 +33,7 @@ function readExcelFile(filePath) {
     }
 }
 
-const data = readExcelFile('PruebaArquitectura/polla.xlsx');
+const data = readExcelFile('polla.xlsx');
 
 console.log('Data from Excel:', data);
 
@@ -95,4 +96,4 @@ function saveExcelFile(hfInstance, filePath) {
 }
 
 // Guardar el archivo después de las ediciones
-saveExcelFile(hfInstance1, 'PruebaArquitectura/resultado.xlsx');
+saveExcelFile(hfInstance1, 'resultado.xlsx');
