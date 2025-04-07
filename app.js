@@ -5,8 +5,6 @@ const options = {
     licenseKey: 'gpl-v3'
 };
 
-
-
 function readExcelFile(filePath) {
     try {
         // Read the workbook
@@ -17,6 +15,24 @@ function readExcelFile(filePath) {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        // Check if the headers match the expected format
+        const expectedHeaders = ['Vehiculo', 'Fecha', 'Hora', 'Velocidad', 'Estatus', 'Lts', 'ADC', 'Bat(V)', 'Evento', 'GPS', 'Punto de Interes', 'Comentarios'];
+        
+        // Get the first row (headers)
+        const headers = data[0] || [];
+        
+        // Check if headers match the expected format
+        if (!arraysEqual(headers, expectedHeaders)) {
+            console.error('¡ALERTA! Los encabezados del archivo no coinciden con el formato esperado.');
+            console.error('Encabezados esperados:', expectedHeaders.join(', '));
+            console.error('Encabezados encontrados:', headers.join(', '));
+            
+            // You could throw an error to stop execution if needed
+            // throw new Error('Format validation failed');
+        }
+        else {
+            console.log('Encabezados del archivo coinciden con el formato esperado.');}
 
         // Create HyperFormula instance
         const hfInstance = HyperFormula.buildFromArray(data, { 
@@ -33,25 +49,27 @@ function readExcelFile(filePath) {
     }
 }
 
+// Helper function to compare arrays
+function arraysEqual(a, b) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+    }
+    return true;
+}
+
 const data = readExcelFile('polla.xlsx');
 
 console.log('Data from Excel:', data);
-
-
-
-
 
 console.log('CACA');
 n1 = 10;
 const tableData = [['10', '20', '=SUM(' +n1+',B1)', '40'], ['50', '60', '70', '80']];
 
-
-
 // Create a new instance of HyperFormula
 const hfInstance1 = HyperFormula.buildFromArray(data, options);
 hfInstance1.addSheet('Sheet2');
 hfInstance1.setCellContents({ row: 0, col: 0, sheet: 1 }, [["Nombre", "Edad"], ["Juan", 20], ["Pedro", 30],["Maria", 25]]);
-
 
 console.log(hfInstance1.getSheetNames()); // ['Sheet1', 'Sheet2']
 const result = hfInstance1.getCellValue({ sheet: 1, col: 1, row: 2 });
