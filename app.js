@@ -1,5 +1,17 @@
 const { HyperFormula } = require('hyperformula'); // Ensure correct import
 const XLSX = require('xlsx');
+const express = require('express');
+const path = require('path');
+
+const app = express();
+const PORT = 3000;
+app.use(express.static(__dirname));
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+});
 
 const options = {
     licenseKey: 'gpl-v3' // Licencia gratis
@@ -65,11 +77,13 @@ const data = readExcelFile('polla.xlsx');
 console.log('Data from Excel:', data);
 
 
-n1 = 10;
+const n1 = 10;
 const tableData = [['10', '20', '=SUM(' +n1+',B1)', '40'], ['50', '60', '70', '80']];
 const Prueba = HyperFormula.buildFromArray(tableData, options);
-console.log(Prueba.getCellValue({ row: 0, col: 2 })); // 20 + 10 = 30, aquí ejecuta la fórmula, no regresa el string
-console.log(Prueba.getCellValue({ row: 1, col: 0 })); // 50
+// Importante, debes especificar todo, incluso la hoja, si no lo haces, lanza un error. 
+// Expected value of type: SimpleCellAddress for config parameter: cellAddress
+console.log(Prueba.getCellValue({ row: 0, col: 2, sheet:0 })); // 20 + 10 = 30, aquí ejecuta la fórmula, no regresa el string
+console.log(Prueba.getCellValue({ row: 1, col: 0, sheet:0 })); // 50
 
 
 // Instanciamiento de HyperFormula.
