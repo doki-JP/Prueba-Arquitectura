@@ -2,54 +2,56 @@ const { HyperFormula } = require('hyperformula'); // Ensure correct import
 const XLSX = require('xlsx');
 
 const options = {
-    licenseKey: 'gpl-v3'
-};
-
+    licenseKey: 'gpl-v3' // Licencia gratis
+}
+// Funcion para leer el archivo Excel
 function readExcelFile(filePath) {
     try {
         // Read the workbook
         console.log('Reading Excel file...', filePath);
         const workbook = XLSX.readFile(filePath);
         
-        // Convert first sheet to 2D array
+        // Converción de Excel a un arreglo
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-        // Check if the headers match the expected format
+        // Encabezados esperados
         const expectedHeaders = ['Vehiculo', 'Fecha', 'Hora', 'Velocidad', 'Estatus', 'Lts', 'ADC', 'Bat(V)', 'Evento', 'GPS', 'Punto de Interes', 'Comentarios'];
         
-        // Get the first row (headers)
+        // Checar la primera fila de datos
         const headers = data[0] || [];
         
-        // Check if headers match the expected format
+        // Verificación de encabezados (Que cumpla con los encabezados esperados)
         if (!arraysEqual(headers, expectedHeaders)) {
             console.error('¡ALERTA! Los encabezados del archivo no coinciden con el formato esperado.');
             console.error('Encabezados esperados:', expectedHeaders.join(', '));
             console.error('Encabezados encontrados:', headers.join(', '));
             
-            // You could throw an error to stop execution if needed
-            // throw new Error('Format validation failed');
+            // Error para detener la ejecución si los encabezados no coinciden
+            // throw new Error('Validación de formato no exitosa');
         }
-        else {
-            console.log('Encabezados del archivo coinciden con el formato esperado.');}
+        
 
-        // Create HyperFormula instance
-        const hfInstance = HyperFormula.buildFromArray(data, { 
-            licenseKey: 'gpl-v3' 
-        });
+        // Instanciamiento de HyperFormula.
+        // Se le pasa el arreglo de datos para que los procese HyperFormula
+        // Intenté usar la función buildfromSheets, pero no funcionó.
+        const hfInstance = HyperFormula.buildFromArray(data, options);
 
-        // Get cell value (example)
+        // Ejemplo para obtener el valor de una celda
+        // Aquí se puede cambiar la celda a la que se quiere acceder, incluso puede ser una celda que contenga una fórmula 
+        // (Regresa el resultado de la fórmula).
         const value = hfInstance.getCellValue({ row: 0, col: 1, sheet: 0 });
         console.log('Cell value:', value);
-
         return data;
+
     } catch (err) {
-        console.error('Error reading Excel file:', err);
+        console.error('Error de lectura: ', err);
     }
 }
 
-// Helper function to compare arrays
+// Función para la comparación de encabezados, compara dos arreglos y regresa true si son iguales
+// y false si no lo son.
 function arraysEqual(a, b) {
     if (a.length !== b.length) return false;
     for (let i = 0; i < a.length; i++) {
@@ -62,34 +64,31 @@ const data = readExcelFile('polla.xlsx');
 
 console.log('Data from Excel:', data);
 
-console.log('CACA');
+
 n1 = 10;
 const tableData = [['10', '20', '=SUM(' +n1+',B1)', '40'], ['50', '60', '70', '80']];
+const Prueba = HyperFormula.buildFromArray(tableData, options);
+console.log(Prueba.getCellValue({ row: 0, col: 2 })); // 20 + 10 = 30, aquí ejecuta la fórmula, no regresa el string
+console.log(Prueba.getCellValue({ row: 1, col: 0 })); // 50
 
-// Create a new instance of HyperFormula
+
+// Instanciamiento de HyperFormula.
 const hfInstance1 = HyperFormula.buildFromArray(data, options);
 hfInstance1.addSheet('Sheet2');
+// setCellContents: Se le pasan los datos a la hoja que se acaba de crear, en este caso 'Sheet2', y lo agrega.
 hfInstance1.setCellContents({ row: 0, col: 0, sheet: 1 }, [["Nombre", "Edad"], ["Juan", 20], ["Pedro", 30],["Maria", 25]]);
 
 console.log(hfInstance1.getSheetNames()); // ['Sheet1', 'Sheet2']
-const result = hfInstance1.getCellValue({ sheet: 1, col: 1, row: 2 });
+console.log(hfInstance1.getSheetValues(1)); // [['Nombre', 'Edad'], ['Juan', 20], ['Pedro', 30], ['Maria', 25]]
+const result = hfInstance1.getCellValue({ sheet: 1, col: 1, row: 2 }); // 30
 
 console.log("El resultado es: ",result);
 
-// Filter the data in Sheet2 where Age > 20
+// Filtrado de datos en la hoja 1
+// Se filtran los datos de la hoja 1, en este caso se filtran los que tienen edad mayor a 20
 const filter = hfInstance1.getSheetValues(1).filter(row => row[1] > 20);
 console.log("Filtered data (Age > 20):", filter);
 
-/*
-// Replace the value Juan with Pedro in Sheet2
-const changes = hfInstance1.setSheetContent(1, [["Juan"]], [["Pedro"]]);
-console.log("Changes made:", changes);
-// Get the values from Sheet2
-const sheet2Values = hfInstance1.getSheetValues(1);
-console.log("Sheet2 values:", sheet2Values);
-*/
-
-// Get the calculated value of the cell C1
 const value = hfInstance1.getCellValue({ row: 0, col: 2 , sheet: 0 });  
 console.log(value); // 30
 
