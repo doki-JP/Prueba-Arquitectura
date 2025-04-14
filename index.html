@@ -12,19 +12,19 @@
 </head>
 <body>
   <h2>Generador de Fórmulas con HyperFormula</h2>
-
+<!-- Dropdown de operaciones disponibles-->
   <label>Operación:
     <select id="operacion">
       <option value="SUM">Sumar</option>
       <option value="AVERAGE">Promediar</option>
-      <option value="COUNTA">Contar valores</option>
+      <option value="COUNT">Contar valores</option>
     </select>
   </label>
-
-  <label>Celdas (separadas por coma, ej. A1,A2,A3):
+<!--Input de las celdas a considerar en la fórmula-->
+  <label>Celdas (separadas por coma, ej. A1,A2,A3. O columnas enteras, ej. [@Combustible]):
     <input type="text" id="celdas" placeholder="A1,A2,A3">
   </label>
-
+<!-- Dropdown de comparadores disponibles-->
   <label>Comparación:
     <select id="comparador">
       <option value=">">Mayor que</option>
@@ -34,23 +34,24 @@
       <option value="=">Igual a</option>
     </select>
   </label>
-
+<!--Input del valor de comparación-->
   <label>Valor de comparación:
     <input type="number" id="valorComparacion" placeholder="10">
   </label>
-
+<!--Input del texto a mostrar si se cumple la condición-->
   <label>Texto si se cumple:
     <input type="text" id="verdadero" placeholder="Aprobado">
   </label>
-
+<!-- Input del texto a mostrar si NO se cumple la condición-->
   <label>Texto si no se cumple:
     <input type="text" id="falso" placeholder="Revisar">
   </label>
 
+<!-- Botón para generar la fórmula -->
   <button onclick="generarFormula()">Generar fórmula</button>
 
   <div class="resultado" id="resultado"></div>
-
+<!-- Script para generar la fórmula -->
   <script>
     function generarFormula() {
       const operacion = document.getElementById("operacion").value;
@@ -59,9 +60,10 @@
       const valor = document.getElementById("valorComparacion").value;
       const verdadero = document.getElementById("verdadero").value;
       const falso = document.getElementById("falso").value;
-
+      // Concatenación de los valores para crear la fórmula
+      // Se utiliza la función IF para evaluar la condición y devolver el texto correspondiente
       const formula = `=IF(${operacion}(${celdas})${comparador}${valor},"${verdadero}","${falso}")`;
-
+      // Se muestra la fórmula generada en el div de resultado
       document.getElementById("resultado").innerText = `Fórmula generada:\n${formula}`;
     }
   </script>
