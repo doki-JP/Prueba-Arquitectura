@@ -1,4 +1,4 @@
-const { HyperFormula } = require('hyperformula'); // Ensure correct import
+const { HyperFormula } = require('hyperformula'); 
 const XLSX = require('xlsx');
 const express = require('express');
 const path = require('path');
@@ -72,19 +72,21 @@ function arraysEqual(a, b) {
     return true;
 }
 
-const data = readExcelFile('polla.xlsx');
+const data = readExcelFile('test.xlsx');
 
 console.log('Data from Excel:', data);
 
 
 const n1 = 10;
 const tableData = [['10', '20', '=SUM(' +n1+',B1)', '40'], ['50', '60', '70', '80']];
+// Instanciamiento de HyperFormula.
+// Se le pasa el arreglo de datos para que los procese HyperFormula
 const Prueba = HyperFormula.buildFromArray(tableData, options);
 // Importante, debes especificar todo, incluso la hoja, si no lo haces, lanza un error. 
 // Expected value of type: SimpleCellAddress for config parameter: cellAddress
 console.log(Prueba.getCellValue({ row: 0, col: 2, sheet:0 })); // 20 + 10 = 30, aquí ejecuta la fórmula, no regresa el string
 console.log(Prueba.getCellValue({ row: 1, col: 0, sheet:0 })); // 50
-
+Prueba.setCellContents({ row: 0, col: 0, sheet:0 }, [['10', '20', '=SUM(' +n1+',B1)', '40'], ['50', '60', '70', '80']]);
 
 // Instanciamiento de HyperFormula.
 const hfInstance1 = HyperFormula.buildFromArray(data, options);
